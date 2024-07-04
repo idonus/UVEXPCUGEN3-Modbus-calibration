@@ -8,24 +8,24 @@ TIMEOUT = 60
 
 def write_register_and_wait(client, register, value, slave_address):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-    print(f"{now[:-3]} Registre [{register}] valeur [{value}]")
+    print(f"{now[:-3]} Register [{register}] value [{value}]")
     
-    # Vérifier si la valeur dépasse la plage autorisée pour un entier non signé de 16 bits
+    # Check if the value exceeds the allowed range for a 16-bit unsigned integer
     if value > 65535:
-        print("La valeur dépasse la plage autorisée pour un entier non signé de 16 bits.")
+        print("Value exceeds the allowed range for a 16-bit unsigned integer.")
         return
     
-    # Utiliser 'H' pour un entier non signé de 16 bits
+    # Use 'H' for a 16-bit unsigned integer
     encoded_value = struct.pack(">H", value)
     
-    # Écrire le registre avec la valeur encodée
+    # Write the register with the encoded value
     response = client.write_register(register, struct.unpack(">H", encoded_value)[0], slave_address)
     
     if response.isError():
-        print(f"Erreur lors de l'écriture du registre {register}: {response}")
+        print(f"Error writing to register {register}: {response}")
 
 def get_input(prompt, default=None, type_func=str):
-    """Fonction utilitaire pour obtenir une entrée utilisateur avec un type spécifique."""
+    """Utility function to get user input with a specific type."""
     while True:
         try:
             user_input = input(prompt)
@@ -33,21 +33,21 @@ def get_input(prompt, default=None, type_func=str):
                 return default
             return type_func(user_input)
         except ValueError:
-            print(f"Veuillez entrer une valeur valide de type {type_func.__name__}.")
+            print(f"Please enter a valid value of type {type_func.__name__}.")
 
 def main():
     try:
-        # Demander à l'utilisateur l'adresse IP, le port et l'adresse de l'esclave
-        SERVER_HOST = get_input("Entrez l'adresse IP du serveur Modbus (par exemple, 192.168.33.177) : ", '192.168.33.177')
-        SERVER_PORT = get_input("Entrez le port du serveur Modbus (par exemple, 502) : ", 502, int)
-        SLAVE_ADDRESS = get_input("Entrez l'adresse de l'esclave Modbus (par exemple, 1) : ", 1, int)
+        # Ask the user for the Modbus server IP address, port, and slave address
+        SERVER_HOST = get_input("Enter the Modbus server IP address (e.g., 192.168.33.177): ", '192.168.33.177')
+        SERVER_PORT = get_input("Enter the Modbus server port (e.g., 502): ", 502, int)
+        SLAVE_ADDRESS = get_input("Enter the Modbus slave address (e.g., 1): ", 1, int)
 
         client = ModbusTcpClient(SERVER_HOST, SERVER_PORT)
         client.connect()
 
         while True:
             try:
-                wavelength = int(input("Entrez le wavelength à calibrer 1 à 4 : "))
+                wavelength = int(input("Enter the wavelength to calibrate (1 to 3) or Ctrl-C to quit: "))
                 
                 oldSensitivity = 0
 
@@ -65,19 +65,19 @@ def main():
                         client.write_register(0, 303, SLAVE_ADDRESS)
                         oldSensitivity_response = client.read_holding_registers(29, 1, SLAVE_ADDRESS)
                     case _:
-                        print("Veuillez entrer un chiffre entre 1 et 4.")
+                        print("Please enter a number between 1 and 4.")
                         continue
                 
                 oldSensitivity = oldSensitivity_response.registers[0] if oldSensitivity_response else 0
                 oldSensitivityDivided = oldSensitivity / 100
 
-                # Lire la valeur mesurée en tant que float
+                # Read the measured value as a float
                 try:
-                    measured_value = float(input("Entrez la valeur mesurée sur l'appareil de calibration : "))
-                    # Appliquer le facteur 100 et convertir en entier
+                    measured_value = float(input("Enter the measured value from the calibration device: "))
+                    # Apply the factor of 100 and convert to integer
                     value_to_write = int(measured_value * 100)
                 except ValueError:
-                    print("Veuillez entrer une valeur numérique valide.")
+                    print("Please enter a valid numeric value.")
                     continue
 
                 write_register_and_wait(client, 128, value_to_write, SLAVE_ADDRESS)
@@ -97,21 +97,21 @@ def main():
                     case 4:
                         newSensitivity_response = client.read_holding_registers(29, 1, SLAVE_ADDRESS)
                     case _:
-                        print("Erreur.")
+                        print("Error.")
                         continue
 
                 newSensitivity = newSensitivity_response.registers[0] if newSensitivity_response else 0
                 newSensitivityDivided = newSensitivity / 100
 
-                print(f"Calibration terminée : ancienne valeur {oldSensitivityDivided:.2f} nouvelle valeur pour la sensibilité : {newSensitivityDivided:.2f}")
+                print(f"Calibration complete: old value {oldSensitivityDivided:.2f} new sensitivity value: {newSensitivityDivided:.2f}")
             except ValueError:
-                print("Veuillez entrer des nombres entiers valides.")
+                print("Please enter valid integer numbers.")
 
     except ConnectionException as e:
-        print(f"Impossible de se connecter au serveur Modbus : {e}")
+        print(f"Unable to connect to Modbus server: {e}")
 
     except KeyboardInterrupt:
-        print("Interruption par l'utilisateur.")
+        print("Interrupted by user.")
     finally:
         client.close()
 
