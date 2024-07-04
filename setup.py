@@ -17,7 +17,7 @@ setup(
     description='Script for calibrate UV-EXP-CU-GEN3 by Modbus TCP',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/votre-repo/modbus_calibration',
+    url='https://github.com/idonus/UVEXPCUGEN3-Modbus-calibration',
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
