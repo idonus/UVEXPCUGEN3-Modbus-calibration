@@ -1,3 +1,5 @@
+import os
+import platform
 import time
 import struct
 from datetime import datetime
@@ -5,6 +7,14 @@ from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ConnectionException
 
 TIMEOUT = 60
+
+def clear_terminal():
+    system = platform.system()
+    
+    if system == 'Windows':
+        os.system('cls')  # Windows
+    else:
+        os.system('clear')  # macOS et Linux
 
 def write_register_and_wait(client, register, value, slave_address):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -38,6 +48,7 @@ def get_input(prompt, default=None, type_func=str):
 def main():
     try:
         # Ask the user for the Modbus server IP address, port, and slave address
+        clear_terminal()
         SERVER_HOST = get_input("Enter the Modbus server IP address (e.g., 192.168.33.177): ", '192.168.33.177')
         SERVER_PORT = get_input("Enter the Modbus server port (e.g., 502): ", 502, int)
         SLAVE_ADDRESS = get_input("Enter the Modbus slave address (e.g., 1): ", 1, int)
@@ -47,6 +58,7 @@ def main():
 
         while True:
             try:
+                clear_terminal()
                 wavelength = int(input("Enter the wavelength to calibrate (1 to 3) or Ctrl-C to quit: "))
                 
                 oldSensitivity = 0
