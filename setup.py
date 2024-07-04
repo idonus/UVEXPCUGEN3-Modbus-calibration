@@ -12,9 +12,9 @@ setup(
             'modbus_calibration=modbus_calibration:main',
         ],
     },
-    author='Votre Nom',
-    author_email='votre.email@example.com',
-    description='Un script de calibration Modbus',
+    author='Sullivan Buchs',
+    author_email='sullivan.buchs@idonus.com',
+    description='Script for calibrate UV-EXP-CU-GEN3 by Modbus TCP',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/votre-repo/modbus_calibration',
@@ -25,3 +25,4 @@ setup(
     ],
     python_requires='>=3.6',
 )
+
