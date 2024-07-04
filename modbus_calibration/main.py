@@ -116,6 +116,7 @@ def main():
                 newSensitivityDivided = newSensitivity / 100
 
                 print(f"Calibration complete: old value {oldSensitivityDivided:.2f} new sensitivity value: {newSensitivityDivided:.2f}")
+                input()
             except ValueError:
                 print("Please enter valid integer numbers.")
 
