@@ -85,7 +85,7 @@ def main():
 
                 # Read the measured value as a float
                 try:
-                    measured_value = float(input("Enter the measured value from the calibration device: "))
+                    measured_value = float(input("Enter the measured value from the calibration device in mW/cm² :"))
                     # Apply the factor of 100 and convert to integer
                     value_to_write = int(measured_value * 100)
                 except ValueError:
@@ -115,7 +115,7 @@ def main():
                 newSensitivity = newSensitivity_response.registers[0] if newSensitivity_response else 0
                 newSensitivityDivided = newSensitivity / 100
 
-                print(f"Calibration complete: old value {oldSensitivityDivided:.2f} new sensitivity value: {newSensitivityDivided:.2f}")
+                print(f"Calibration complete: old value {oldSensitivityDivided*100} new sensitivity value: {newSensitivityDivided*100}")
                 input()
             except ValueError:
                 print("Please enter valid integer numbers.")
